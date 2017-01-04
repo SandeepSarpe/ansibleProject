@@ -1,0 +1,55 @@
+version: '2'
+services:
+
+  knowledge-base:
+      image: shukla2009/scala
+      container_name: knowledge-base
+      hostname: knowledge-base
+      restart: always
+      network_mode: bridge
+      environment:
+        - CASSANDRA_HOST=CASSANDRA_HOST_VAL
+        - KAFKA_URL=KAFKA_URL_VAL
+        - ZK_URL=ZK_URL_VAL
+      volumes:
+        - /etc/timezone:/etc/timezone:ro
+        - DEPLOYMENT_PATH_VAL/deploy-knowledge-base/latest/:/tmp
+      ports:
+        - 14040:4040
+      # log_opt:
+      #   max-size: 2g
+      command: /tmp/bin/knowledge-base -Dconfig.file=/tmp/conf/stage-docker.conf
+
+#KNOWLEDGE-BASE
+# docker run --name knowledge-base \
+# -v /home/synerzip/data/jenkins/workspace/deploy-Knowledge-base/latest/:/tmp \
+# -v /etc/timezone:/etc/timezone:ro \
+# -h knowledge-base \
+# --log-opt max-size=2g \
+# -e CASSANDRA_HOST=$(hostname) \
+# -e KAFKA_URL=$(hostname):9092 \
+# -e ZK_URL=$(hostname):2181 \
+# -p 14040:4040 \
+# -d  shukla2009/scala /tmp/bin/knowledge-base -Dconfig.file=/tmp/conf/stage-docker.conf
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

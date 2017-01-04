@@ -1,0 +1,13 @@
+- name: Remove zookeeper container
+  shell: sudo docker rm -f zookeeper_{{Zookeeper_ID}}
+  tags:
+    - removemesoscluster
+    - removezookeeper
+
+- name: Remove mesos-master container
+  shell: sudo docker rm -f mesos-master_{{Zookeeper_ID}}
+  tags:
+    - removemesoscluster 
+    - removemesosmaster
+
+

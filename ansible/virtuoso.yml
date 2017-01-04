@@ -1,0 +1,4 @@
+- hosts: diwo-services
+  sudo: yes
+  roles:
+    - role: virtuoso

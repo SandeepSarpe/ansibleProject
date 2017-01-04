@@ -1,0 +1,35 @@
+version: '2'
+services:
+
+  store-manager:
+      image: node:4.4.5
+      container_name: store
+      hostname: store-manager
+      restart: always
+      network_mode: bridge
+      environment:
+        - NODE_ENV=production
+        - MONGOLAB_URI=mongodb://MONGO_IP_VAL:27017/diwo
+      volumes:
+        - /etc/timezone:/etc/timezone:ro
+        - DEPLOYMENT_PATH_VAL/deploy-store-manager/latest:/usr/src/app
+      ports:
+        - 8085:8080
+      external_links:
+        - knowledge-base:KB
+      # log_opt:
+      #   max-size: 2g
+      working_dir: /usr/src/app
+      command: node server/app.js
+
+#STORE MANAGER
+# docker run --name store \
+# -p 8085:8080 \
+# -h store-manager \
+# -v /etc/timezone:/etc/timezone:ro \
+# --log-opt max-size=2g \
+# -v $REPO/store-manager/dist:/usr/src/app \
+# -w /usr/src/app \
+# -e "NODE_ENV=production" \
+# -e "MONGOLAB_URI=mongodb://$(hostname):27017/diwo" \
+# -d node:4.4.5 node server/app.js

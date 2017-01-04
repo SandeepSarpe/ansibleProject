@@ -1,0 +1,35 @@
+version: '2'
+services:
+
+  diwo-rest:
+      image: shukla2009/scala
+      container_name: diwo-rest-integrated
+      hostname: diwo-rest-integrated
+      restart: always
+      network_mode: bridge
+      volumes:
+        - /etc/timezone:/etc/timezone:ro
+        - /home/synerzip/data/jenkins/workspace/deploy-rest-engine-integrated/latest/:/tmp
+        - /home/synerzip/data/users/diwo-rest-integrated/:/root/data/
+      ports:
+        - 9001:9001
+      external_links:
+        - knowledge-base:KB
+        - semantic-query-engine:NLP
+        - strategy-builder:SB
+      # log_opt:
+      #   max-size: 2g
+      command: shukla2009/scala /tmp/bin/diwo-rest -Dconfig.file=/tmp/conf/stage-docker.conf -Dhttps.port=9001
+
+#DIWO-REST-INTEGRATED
+# docker run --name diwo-rest-integrated \
+# -h diwo-rest-integrated \
+# --log-opt max-size=2g \
+# -v /home/synerzip/data/jenkins/workspace/deploy-rest-engine-integrated/latest/:/tmp \
+# -v /home/synerzip/data/users/diwo-rest-integrated/:/root/data/ \
+# -v /etc/timezone:/etc/timezone:ro \
+# -p 9001:9001 \
+# --link knowledge-base:KB \
+# --link semantic-query-engine:NLP \
+# --link strategy-builder:SB \
+# -d  shukla2009/scala /tmp/bin/diwo-rest -Dconfig.file=/tmp/conf/stage-docker.conf -Dhttps.port=9001

@@ -1,0 +1,41 @@
+---
+- hosts: all
+  become: true
+  roles:
+    - common
+
+- hosts: mesos-master-cluster
+  become: true
+  roles:
+    - mesos_zookeeper_cluster
+
+- hosts: mesos-slave
+  become: true
+  roles:
+    - mesos_zookeeper_cluster
+
+- hosts: cassandra-cluster
+  become: true
+  roles:
+    - cassandra
+
+- hosts: diwo-services
+  become: true
+  roles:
+    - kafka
+    - knowledge_base
+    - diwo_backend
+    - pos_generator
+    - mongo
+    - virtuoso
+    - store_manager 
+    - semantic_query_engine
+    - query_processing_engine
+    - strategy_builder
+    - diwo_rest
+    - diwo_rest_LB
+
+- hosts: spark-job-submission
+  become: true
+  roles:
+    - spark_job_submission 

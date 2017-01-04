@@ -1,0 +1,23 @@
+- name: pull scala image
+  docker_image: name=shukla2009/scala
+  tags:
+    - pullscalaimage
+    - creatediworest
+
+- name: copy docker-compose file to inventory machine
+  copy: src=docker-compose.yml dest=/tmp/dockercompose/diwo-rest/
+  tags:
+    - copydockercomposefile-rest
+    - creatediworest
+
+- name: modify docker-compose file with env varaibles values
+  shell: sed -i "s/DEPLOYMENT_PATH_VAL/{{DEPLOYMENT_PATH}}/g" /tmp/dockercompose/diwo-rest/docker-compose.yml
+  tags:
+    - modifydockercomposefile-rest
+    - creatediworest
+
+- name: create and configure diwo-rest container
+  docker_service: project_src=/tmp/dockercompose/diwo-rest/
+  tags:
+    - creatediworest
+

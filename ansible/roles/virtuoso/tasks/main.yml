@@ -1,0 +1,36 @@
+- name: pull virtuoso image
+  docker_image: name=tenforce/virtuoso
+  tags:
+    - pullvirtuosoimage
+    - createvirtuoso
+
+- name: create and configure virtuoso container
+  docker_container:
+    name: virtuoso
+    image: tenforce/virtuoso
+    hostname: virtuoso
+    restart_policy: on-failure
+    restart_retries: 3
+    ports:
+      - 8890:8890
+      - 1111:1111
+    volumes:
+      - /etc/timezone:/etc/timezone:ro
+    log_options: max-size=2g
+    env:
+        DBA_PASSWORD: dba
+        SPARQL_UPDATE: true
+  tags:
+    - createvirtuoso
+
+#VIRTUOSO
+# docker run --name virtuoso \
+#         -p 8890:8890 \
+#         -p 1111:1111 \
+#         -e "DBA_PASSWORD=dba" \
+#         -h virtuoso \
+#         -v /etc/timezone:/etc/timezone:ro \
+#         -e "SPARQL_UPDATE=true" \
+#         -v /home/synerzip/data/virtuoso/:/data/ \
+#         --log-opt max-size=2g \
+#         -d tenforce/virtuoso

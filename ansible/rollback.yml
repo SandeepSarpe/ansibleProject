@@ -1,0 +1,4 @@
+- hosts: mesos-master-cluster
+  sudo: yes
+  roles:
+    - role: rollback

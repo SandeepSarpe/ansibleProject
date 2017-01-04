@@ -1,0 +1,44 @@
+- hosts: diwo-services
+  sudo: yes
+  roles:
+    - role: virtuoso
+
+- hosts: diwo-services
+  sudo: yes
+  roles:
+    - role: mongo
+
+- hosts: all
+  sudo: yes
+  roles:
+    - role: common
+
+- hosts: mesos-master-cluster
+  sudo: yes
+  roles:
+    - role: mesos_zookeeper_cluster
+
+- hosts: mesos-slave
+  sudo: yes
+  roles:
+    - role: mesos_zookeeper_cluster
+
+- hosts: cassandra-cluster
+  sudo: yes
+  roles:
+    - role: cassandra
+
+- hosts: diwo-services
+  sudo: yes
+  roles:
+    - role: kafka
+
+
+
+
+
+
+
+
+
+

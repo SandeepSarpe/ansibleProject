@@ -1,0 +1,5 @@
+- hosts: all
+  become: true
+  roles:
+    - spark_job_submission
+

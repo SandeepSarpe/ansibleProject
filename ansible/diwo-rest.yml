@@ -1,0 +1,5 @@
+---
+- hosts: diwo-services
+  become: yes
+  roles:
+    - role: diwo_rest

@@ -1,0 +1,31 @@
+- name: pull kafka image
+  docker_image: name=shukla2009/kafka
+  tags:
+    - pullkafkaimage
+
+- name: create and configure kafka container
+  docker_container:
+    name: kafka
+    image: shukla2009/kafka
+    hostname: kafka
+    restart_policy: on-failure
+    restart_retries: 3
+    ports:
+      - 9092:9092
+    volumes:
+      - /etc/timezone:/etc/timezone:ro
+    env:
+        ADVERTISED_LISTENERS: "{{HOST_IP}}:9092"
+    log_options: max-size=2g
+  tags:
+    - createkafka
+
+
+#KAFKA
+#docker run --name kafka \
+#        -p 2181:2181 \
+#        -p 9092:9092 \
+#        -v /etc/timezone:/etc/timezone:ro \
+#        --log-opt max-size=2g \
+#    --env ADVERTISED_LISTENERS=$(hostname):9092 \
+#    -d shukla2009/kafka

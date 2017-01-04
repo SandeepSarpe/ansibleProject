@@ -1,0 +1,26 @@
+- name: pull scala image
+  docker_image: name=shukla2009/scala
+  tags:
+    - pullscalaimage
+    - createqueryprocessingengine
+
+- name: copy docker-compose file to inventory machine
+  copy: src=docker-compose.yml dest=/tmp/dockercompose/query-processing-engine/
+  tags:
+    - copydockercomposefile-qpe
+    - createqueryprocessingengine
+
+- name: modify docker-compose file with env varaibles values
+  shell: sed -i "s/CASSANDRA_HOST_VAL/{{CASSANDRA_HOST}}/g" /tmp/dockercompose/query-processing-engine/docker-compose.yml \
+         && sed -i "s/VIRTUOSO_IP_VAL/{{VIRTUOSO_IP}}/g" /tmp/dockercompose/query-processing-engine/docker-compose.yml \
+         && sed -i "s/DEPLOYMENT_PATH_VAL/{{DEPLOYMENT_PATH}}/g" /tmp/dockercompose/query-processing-engine/docker-compose.yml
+  tags:
+    - createqueryprocessingengine
+    - modifydockercomposefile-qpe
+
+- name: create and configure storemanager container
+  docker_service: project_src=/tmp/dockercompose/query-processing-engine/
+  tags:
+    - createqueryprocessingengine
+
+

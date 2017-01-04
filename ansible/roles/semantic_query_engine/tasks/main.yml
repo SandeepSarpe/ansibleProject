@@ -1,0 +1,25 @@
+- name: pull scala image
+  docker_image: name=shukla2009/scala
+  tags:
+    - pullscalaimage
+    - createsemanticqueryengine
+
+- name: copy docker-compose file to inventory machine
+  copy: src=docker-compose.yml dest=/tmp/dockercompose/semantic-query-engine/
+  tags:
+    - copydockercomposefile-semantic
+    - createsemanticqueryengine
+
+- name: modify docker-compose file with env varaibles values
+  shell: sed -i "s/CASSANDRA_HOST_VAL/{{CASSANDRA_HOST}}/g" /tmp/dockercompose/semantic-query-engine/docker-compose.yml \
+         && sed -i "s/VIRTUOSO_IP_VAL/{{VIRTUOSO_IP}}/g" /tmp/dockercompose/semantic-query-engine/docker-compose.yml \
+         && sed -i "s/DEPLOYMENT_PATH_VAL/{{DEPLOYMENT_PATH}}/g" /tmp/dockercompose/semantic-query-engine/docker-compose.yml
+  tags:
+    - createsemanticqueryengine
+    - modifydockercomposefile-semantic
+
+- name: create and configure storemanager container
+  docker_service: project_src=/tmp/dockercompose/semantic-query-engine/
+  tags:
+    - createsemanticqueryengine
+

@@ -1,0 +1,30 @@
+version: '2'
+services:
+
+  pos-generator:
+    image: shukla2009/scala
+    container_name: pos-generator
+    hostname: pos-generator
+    restart: always
+    network_mode: bridge
+    environment:
+      - CASSANDRA_HOST=CASSANDRA_HOST_VAL
+      - KAFKA_URL=KAFKA_URL_VAL
+      - ZK_URL=ZK_URL_VAL
+    volumes:
+      - /etc/timezone:/etc/timezone:ro
+      - DEPLOYMENT_PATH_VAL/deploy-pos-generator/latest:/tmp
+    # log_opt:
+    #   max-size: 2g
+    command: /tmp/bin/pos-generator -Dconfig.file=/tmp/conf/stage-docker.conf -Dpos.start.date=06/23/2016
+
+
+#POS-GENERATOR
+# docker run --name pos-generator \
+# -v /home/synerzip/data/jenkins/workspace/deploy-pos-generator/latest/:/tmp  \
+# -v /etc/timezone:/etc/timezone:ro \
+# -e "CASSANDRA_HOST=10.1.100.53" \
+# -e "KAFKA_URL=10.1.100.56:9092"  \
+# -e "ZK_URL=10.1.100.56:2181" \
+# -d  shukla2009/scala /tmp/bin/pos-generator -Dconfig.file=/tmp/conf/stage-docker.conf -Dpos.start.date=06/23/2016
+

@@ -1,0 +1,25 @@
+- name: pull scala image
+  docker_image: name=shukla2009/scala
+  tags:
+    - pullscalaimage
+    - createknowledgebase
+
+- name: copy docker-compose file to inventory machine
+  copy: src=docker-compose.yml dest=/tmp/dockercompose/knowledge-base/
+  tags:
+    - copydockercomposefile-kb
+    - createknowledgebase
+
+- name: modify docker-compose file with env varaibles values
+  shell: sed -i "s/CASSANDRA_HOST_VAL/{{CASSANDRA_HOST}}/g" /tmp/dockercompose/knowledge-base/docker-compose.yml \
+         && sed -i "s/KAFKA_URL_VAL/{{KAFKA_URL}}/g" /tmp/dockercompose/knowledge-base/docker-compose.yml \
+         && sed -i "s/ZK_URL_VAL/{{ZK_URL}}/g" /tmp/dockercompose/knowledge-base/docker-compose.yml \
+         && sed -i "s/DEPLOYMENT_PATH_VAL/{{DEPLOYMENT_PATH}}/g" /tmp/dockercompose/knowledge-base/docker-compose.yml
+  tags:
+    - createknowledgebase
+    - modifydockercomposefile-kb
+
+- name: create and configure knowledge-base container
+  docker_service: project_src=/tmp/dockercompose/knowledge-base/
+  tags:
+    - createknowledgebase

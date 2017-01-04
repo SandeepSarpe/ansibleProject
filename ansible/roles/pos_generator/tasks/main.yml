@@ -1,0 +1,35 @@
+- name: pull scala image
+  docker_image: name=shukla2009/scala
+  tags:
+    - pullscalaimage
+    - createposgenerator
+
+- name: copy docker-compose file to inventory machine
+  copy: src=docker-compose.yml dest=/tmp/dockercompose/pos-generator/
+  tags:
+    - copydockercomposefile
+    - createposgenerator
+
+- name: modify docker-compose file with env varaibles values
+  shell: sed -i "s/CASSANDRA_HOST_VAL/{{CASSANDRA_HOST}}/g" /tmp/dockercompose/pos-generator/docker-compose.yml \
+         && sed -i "s/KAFKA_URL_VAL/{{KAFKA_URL}}/g" /tmp/dockercompose/pos-generator/docker-compose.yml \
+         && sed -i "s/ZK_URL_VAL/{{ZK_URL}}/g" /tmp/dockercompose/pos-generator/docker-compose.yml \
+         && sed -i "s/DEPLOYMENT_PATH_VAL/{{DEPLOYMENT_PATH}}/g" /tmp/dockercompose/pos-generator/docker-compose.yml
+  tags:
+    - createposgenerator
+    - modifydockercomposefile
+
+- name: create and configure pos-generator container
+  docker_service: project_src=/tmp/dockercompose/pos-generator/
+  tags:
+    - createposgenerator
+
+#POS-GENERATOR
+# sudo docker run --name pos-generator \
+# -v /home/synerzip/data/jenkins/workspace/deploy-pos-generator/latest/:/tmp  \
+# -v /etc/timezone:/etc/timezone:ro \
+# -e "CASSANDRA_HOST=lovenserver" \
+# -e "KAFKA_URL=lovenserver:9092"  \
+# e "ZK_URL=lovenserver:2181" \
+# -d  shukla2009/scala /tmp/bin/pos-generator -Dconfig.file=/tmp/conf/stage-docker.conf -Dpos.start.date=06/23/2016
+

@@ -1,0 +1,5 @@
+- hosts: diwo-services
+  sudo: yes
+  roles:
+    - role: semantic_query_engine
+

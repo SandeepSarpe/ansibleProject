@@ -1,0 +1,29 @@
+version: '2'
+services:
+
+  semantic-query-engine:
+      image: shukla2009/scala
+      container_name: semantic-query-engine
+      hostname: semantic-query-engine
+      restart: always
+      network_mode: bridge
+      environment:
+        - CASSANDRA_HOST=CASSANDRA_HOST_VAL
+        - VIRTUOSO_URL=VIRTUOSO_IP_VAL:1111
+      volumes:
+        - /etc/timezone:/etc/timezone:ro
+        - DEPLOYMENT_PATH_VAL/deploy-semantic-query-engine/latest/:/tmp
+      # log_opt:
+      #   max-size: 2g
+      command: /tmp/bin/semantic-query-engine -Dconfig.file=/tmp/conf/stage-docker.conf  -Dcustomized.question.json=/tmp/conf/CustomizedQuestions.json
+
+# SEMANTIC QUERY ENGINE
+# docker run --name semantic-query-engine \
+# -v /home/synerzip/data/jenkins/workspace/deploy-semantic-query-engine/workspace/latest/:/tmp \
+# -v /etc/timezone:/etc/timezone:ro \
+# -h semantic-query-engine \
+# --log-opt max-size=2g \
+# -e "CASSANDRA_HOST=$(hostname)" \
+# -e "VIRTUOSO_URL=$(hostname):1111" \
+# -d  shukla2009/scala /tmp/bin/semantic-query-engine -Dconfig.file=/tmp/conf/stage-docker.conf  -Dcustomized.question.json=/tmp/conf/CustomizedQuestions.json
+

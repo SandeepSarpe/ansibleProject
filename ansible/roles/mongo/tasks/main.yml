@@ -1,0 +1,29 @@
+- name: pull mongo image
+  docker_image: name=mongo
+  tags:
+    - pullmongoimage
+    - createmongo
+
+- name: create and configure mongo container
+  docker_container:
+    name: mongo
+    image: mongo
+    hostname: mongo
+    restart_policy: on-failure
+    restart_retries: 3
+    ports:
+      - 27017:27017
+    volumes:
+      - "{{DEPLOYMENT_PATH}}/mongo/:/data/db"
+    log_options: max-size=2g
+  tags:
+    - createmongo
+
+
+#MONGO
+# docker run --name mongo \
+#         -h mongo \
+#         --log-opt max-size=2g \
+#         -p 27017:27017 \
+#         -v /home/synerzip/data/mongo/:/data/db \
+#         -d mongo

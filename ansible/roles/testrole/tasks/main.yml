@@ -1,0 +1,11 @@
+- name: Installing vim
+  become: true
+  apt: pkg= {{item}} update_cache=yes
+  with_items:
+    - vim
+  tags: testinstallation
+
+- name: Installing vim
+  become: true
+  shell: mkdir /tmp/ansibleTestPass
+  tags: testrunshellcommand

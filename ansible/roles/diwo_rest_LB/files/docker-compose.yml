@@ -1,0 +1,36 @@
+version: '2'
+services:
+
+  diwo-rest:
+      image: shukla2009/scala
+      container_name: diwo-rest-LB
+      hostname: diwo-rest-LB
+      restart: always
+      network_mode: bridge
+      volumes:
+        - /etc/timezone:/etc/timezone:ro
+        - DEPLOYMENT_PATH_VAL/deploy-rest-engine-LB/latest/:/tmp
+        - DEPLOYMENT_PATH_VAL/users/diwo-rest-LB/:/root/data/
+      ports:
+        - 9002:9002
+      external_links:
+        - knowledge-base:KB
+        - query-processing-engine:QUERYPE
+        - strategy-builder:SB
+      # log_opt:
+      #   max-size: 2g
+      command: /tmp/bin/diwo-rest -Dconfig.file=/tmp/conf/stage-docker-lb.conf -Dhttps.port=9002
+
+#DIWO-REST-INTEGRATED
+# docker run --name diwo-rest-integrated \
+# -h diwo-rest-integrated \
+# --log-opt max-size=2g \
+# -v /home/synerzip/data/jenkins/workspace/deploy-rest-engine-integrated/latest/:/tmp \
+# -v /home/synerzip/data/users/diwo-rest-integrated/:/root/data/ \
+# -v /etc/timezone:/etc/timezone:ro \
+# -p 9001:9001 \
+# --link knowledge-base:KB \
+# --link semantic-query-engine:NLP \
+# --link strategy-builder:SB \
+# -d  shukla2009/scala /tmp/bin/diwo-rest -Dconfig.file=/tmp/conf/stage-docker.conf -Dhttps.port=9001
+

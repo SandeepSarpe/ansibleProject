@@ -1,0 +1,75 @@
+# create /tmp/dockerfiles/logstash directory if it doesn't exist
+- name: create /tmp/dockerfiles/logstash directory if it doesn't exist 
+  file: path=/tmp/dockerfiles/logstash state=directory mode=0755
+
+# Copy dockerfile to inventory machine
+- name: copy Dockerfile file to inventory machine
+  copy: src=Dockerfile dest=/tmp/dockerfiles/logstash/
+  tags:
+    - copydockerfile-logstash
+    - createlogstashserver
+# Modify dockerfile with variable values
+- name: modify Dockerfile file with env varaibles values
+  shell: sed -i "s/LOGSTASHSERVERIP_VAL/{{LOGSTASHSERVERIP}}/g" /tmp/dockerfiles/logstash/Dockerfile \
+         && sed -i "s/LOGSTASHSERVERHOSTNAME_VAL/{{LOGSTASHSERVERHOSTNAME}}/g" /tmp/dockerfiles/logstash/Dockerfile
+         && sed -i "s/LOGSTASHSERVERNGINXPASS_VAL/{{LOGSTASHSERVERNGINXPASS}}/g" /tmp/dockerfiles/logstash/Dockerfile
+  tags:
+    - modifydockerfile-logstash
+    - createlogstashserver
+
+# Run dockerfile to create image
+- name: Run Dockerfile to create logstash server image
+  docker_image:
+    path: /tmp/dockerfiles/logstash
+    name: logstashserver
+  tags:
+    - createlogstashserverimage
+    - createlogstashserver
+
+# create docker container
+- name: create logstash server container
+  docker_container:
+    name: logstashserver
+    image: logstashserver
+    hostname: logstashserver
+    restart_policy: always
+    expose: 
+      - 80
+      - 5044
+    ports: 
+      - 80:80
+      - 5044:5044
+    log_options: max-size=2g
+  tags:
+    - createlogstashserver
+    
+# start required services
+- name: start elk services
+  shell: docker exec -i logstashserver sudo service elasticsearch start \
+         && docker exec -i logstashserver sudo service logstash start \
+         && docker exec -i logstashserver sudo service nginx start \
+         && docker exec -i logstashserver sudo service kibana start
+  tags:
+    - startelkservices
+
+# post settings
+- name: load the sample dashboards, visualizations and Beats index patterns into Elasticsearch
+  shell: docker exec -i logstashserver bash -c  "cd beats-dashboards-* && ./load.sh" 
+  tags:
+    - postelksettings
+
+- name: Load Filebeat Index Template in Elasticsearch
+  shell: docker exec -i logstashserver bash -c  "cd ~" 
+         && docker exec -i logstashserver bash -c "curl -O https://gist.githubusercontent.com/thisismitch/3429023e8438cc25b86c/raw/d8c479e2a1adcea8b1fe86570e42abab0f10f364/filebeat-index-template.json"
+        && docker exec -i logstashserver bash -c "curl -XPUT 'http://localhost:9200/_template/filebeat?pretty' -d@filebeat-index-template.json"
+  tags: 
+    - postelksettings
+
+# restart required services
+- name: restart elk services
+  shell: docker exec -i logstashserver sudo service elasticsearch restart \
+         && docker exec -i logstashserver sudo service logstash restart \
+         && docker exec -i logstashserver sudo service nginx restart \
+         && docker exec -i logstashserver sudo service kibana restart
+  tags:
+    - restartelkservices

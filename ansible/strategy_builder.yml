@@ -1,0 +1,4 @@
+- hosts: diwo-services
+  become: yes
+  roles:
+    - role: strategy_builder

@@ -1,0 +1,58 @@
+- name: Install filebeat - copy .sh file
+  copy: src=filebeat.sh dest=/tmp/
+  tags:
+    - installfilebeat
+
+- name: Install filebeat - copy .sh file to docker container
+  shell: docker cp /tmp/filebeat.sh {{item}}:/tmp
+  with_items: "{{docker_containers}}"
+  tags:
+    - installfilebeat
+
+- name: Install filebeat - chmod .sh file
+  shell: docker exec {{item}} chmod +x /tmp/filebeat.sh
+  with_items: "{{docker_containers}}"
+  tags:
+    - installfilebeat
+
+- name: Install filebeat - run .sh file
+  shell: docker exec {{item}} bash -c /tmp/filebeat.sh
+  with_items: "{{docker_containers}}"
+  tags:
+    - installfilebeat
+
+- name: Configure filebeat - Copy filebeat.yml file to inventory machine
+  copy: src=filebeat.yml dest=/tmp/
+  tags:
+    - installfilebeat
+    - copyfilebeatyml
+
+- name: Configure filebeat - copy filebeat.yml file to docker container
+  shell: docker cp /tmp/filebeat.yml {{item}}:/etc/filebeat/
+  with_items: "{{docker_containers}}"
+  tags:
+    - installfilebeat
+    - copyfilebeatyml
+
+- name: Configure filebeat.yml - configure ELK server IP
+  shell: docker exec {{item}} sed -i "s/ELK_SERVER_IP/{{ELK_SERVER_IP}}/g" /etc/filebeat/filebeat.yml
+  with_items: "{{docker_containers}}"
+  tags:
+    - installfilebeat
+    - copyfilebeatyml
+
+- name: Configure filebeat.yml - copy certificate to client machine
+  shell: docker cp logstashserver:/etc/pki/tls/certs/logstash-forwarder.crt /tmp \
+         && docker cp /tmp/logstash-forwarder.crt {{item}}:/etc/pki/tls/certs/
+  with_items: "{{docker_containers}}"
+  tags: 
+    - installfilebeat
+    - copycert
+
+- name: Restart filebeat service
+  shell: docker exec {{item}} service filebeat restart
+  with_items: "{{docker_containers}}" 
+  tags:
+    - restartfilebeat
+
+

@@ -1,0 +1,24 @@
+- name: pull cassandra image
+  docker_image: name=cassandra
+  tags:
+    - pullcassandraimage
+
+- name: create and configure cassandra container
+  docker_container:
+    name: cassandra_{{cassandra_ID}}
+    image: cassandra
+    hostname: cassandra{{cassandra_ID}}
+    restart_policy: always
+    volumes:
+      - /etc/timezone:/etc/timezone:ro
+      - "{{CASSANDRA_DATA_PATH}}/cassandra:/var/lib/cassandra"
+    ports:
+      - 7000:7000
+      - 9042:9042
+      - 7199:7199
+    env:
+        CASSANDRA_BROADCAST_ADDRESS: "{{CASSANDRA_HOSTIP}}"
+        CASSANDRA_SEEDS: "{{CASSANDRA_SEEDS}}"
+    log_options: max-size=2g
+  tags:
+    - createcassandracluster

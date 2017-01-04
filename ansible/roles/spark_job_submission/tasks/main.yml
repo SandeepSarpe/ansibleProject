@@ -1,0 +1,35 @@
+# create /tmp/dockerfiles/logstash directory if it doesn't exist
+- name: create /tmp/dockerfiles/sparkjobsubmission directory if it doesn't exist 
+  file: path=/tmp/dockerfiles/sparkjobsubmission state=directory mode=0755
+  tags:
+    - createsparkjobsubmission
+
+# Copy dockerfile to inventory machine
+- name: copy Dockerfile file to inventory machine
+  copy: src=Dockerfile dest=/tmp/dockerfiles/sparkjobsubmission/
+  tags:
+    - copydockerfile-sparkjobsubmission
+    - createsparkjobsubmission
+
+# Run dockerfile to create image
+- name: Run Dockerfile to create sparkjobsubmission image
+  docker_image:
+    path: /tmp/dockerfiles/sparkjobsubmission
+    name: sparkjobsubmission
+  tags:
+    - createsparkjobsubmissionimage
+    - createsparkjobsubmission
+
+# create docker container
+- name: Create container for sparkjobsubmission
+  docker_container:
+    name: sparkjobsubmission
+    image: sparkjobsubmission
+    hostname: sparkjobsubmission
+    restart_policy: on-failure
+    restart_retries: 3
+    volumes:
+      - /home/teranet/data/:/tmp
+    log_options: max-size=2g
+  tags:
+    - createsparkjobsubmission

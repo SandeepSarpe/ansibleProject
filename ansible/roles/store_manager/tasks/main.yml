@@ -1,0 +1,24 @@
+- name: pull node image
+  docker_image: name=node:4.4.5
+  tags:
+    - pullstoremanagerimage
+    - createstoremanager
+
+
+- name: copy docker-compose file to inventory machine
+  copy: src=docker-compose.yml dest=/tmp/dockercompose/store-manager/
+  tags:
+    - copydockercomposefile-storemanager
+    - createstoremanager
+
+- name: modify docker-compose file with env varaibles values
+  shell: sed -i "s/MONGO_IP_VAL/{{MONGO_IP}}/g" /tmp/dockercompose/store-manager/docker-compose.yml \
+         && sed -i "s/DEPLOYMENT_PATH_VAL/{{DEPLOYMENT_PATH}}/g" /tmp/dockercompose/store-manager/docker-compose.yml
+  tags:
+    - createstoremanager
+    - modifydockercomposefile-storemanager
+
+- name: create and configure storemanager container
+  docker_service: project_src=/tmp/dockercompose/store-manager/
+  tags:
+    - createstoremanager

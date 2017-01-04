@@ -1,0 +1,5 @@
+- hosts: diwo-services
+  sudo: yes
+  roles:
+    - logstash
+    - filebeat

@@ -1,0 +1,44 @@
+- name: create and configure cadvisor container
+  docker_container:
+    name: cadvisor
+    image: google/cadvisor
+    hostname: cadvisor
+    restart_policy: on-failure
+    restart_retries: 3
+    ports:
+      - 8082:8080
+      - 7070:7070
+    volumes:
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+    log_options: max-size=2g
+  tags:
+    - createcadvisor
+
+- name: create and configure cadvisor container
+  docker_container:
+    name: opennms01
+    image: opennms/all:latest
+    hostname: opennms01
+    restart_policy: on-failure
+    restart_retries: 3
+    ports:
+      - 8980:8980 
+      - 8443:8443 
+      - 18980:18980 
+      - 1099:1099 
+      - 101:8101 
+      - 61616:61616 
+      - 5432:5432 
+      - 1022:1022 
+      - 5817:5817 
+      - "161-162:161-162/udp"
+    volumes:
+      - $(pwd):$(pwd) 
+    log_options: max-size=2g
+  tags:
+    - createopennms
+

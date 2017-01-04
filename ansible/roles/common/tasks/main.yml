@@ -1,0 +1,45 @@
+- name: Installing python yaml
+  become: true
+  apt: pkg= {{item}} update_cache=yes
+  with_items:
+    - python-yaml
+  tags: dockerinstallation
+
+- name: Installing docker.io
+  apt: pkg={{item}} state=latest update_cache=yes force=yes
+  with_items:
+    - docker.io
+  tags: dockerinstallation
+
+- name: Add New GPG key
+  apt_key: keyserver=hkp://p80.pool.sks-keyservers.net:80 id=58118E89F3A912897C070ADBF76221572C52609D
+  tags: dockerinstallation
+
+- name: Add an entry in docker.list
+  shell: echo 'deb https://apt.dockerproject.org/repo ubuntu-trusty main' >> /etc/apt/sources.list.d/docker.list
+  tags: dockerinstallation
+
+- name: Install docker-engine
+  apt: pkg={{item}} update_cache=yes purge=yes
+  with_items:
+    - docker-engine
+  tags: dockerinstallation
+
+- name: Install pip
+  apt: pkg={{item}} update_cache=yes force=yes
+  with_items:
+    - python-pip
+  tags: dockerinstallation
+
+- name: Install docker-py
+  pip: name=docker-py version=1.9.0 state=forcereinstall
+  tags: 
+    - dockerinstallation
+    - dockerpyinstallation
+
+
+- name: Install docker-compose
+  pip: name=docker-compose
+  tags:
+    - dockerinstallation
+    - dockercomposeinstallation
